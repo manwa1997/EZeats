@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",  // Inherit settings from the root `tsconfig.json`
+  "compilerOptions": {
+    "outDir": "../dist/auth-service"  // Output directory for compiled files (specific to this service)
+  },
+  "include": [
+    "../src/**/*",  // Include all TypeScript files inside `src` of the auth-service
+    "../shared/**/*"  // Include shared files (make sure shared folder is also included)
+  ],
+  "exclude": [
+    "../dist/**/*"  // Exclude the dist directory from being compiled
+  ]
+}
