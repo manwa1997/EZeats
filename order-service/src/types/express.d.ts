@@ -1,10 +1,9 @@
-import { User } from '../../../shared/entities/user.entity';
-import * as express from 'express';
+import { User } from '../../../shared/entities/user.entity'; // Make sure the import path is correct
 
 declare global {
   namespace Express {
     interface Request {
-      user: User; 
+      user?: User;
     }
   }
 }

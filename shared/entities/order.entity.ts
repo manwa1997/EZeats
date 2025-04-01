@@ -4,22 +4,25 @@ import { User } from './user.entity';
 @Entity()
 export class Order {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id!: number; 
 
   @ManyToOne(() => User, (user) => user.orders, { eager: true, onDelete: 'CASCADE' })
-  user: User;
+  user!: User;
 
   @Column()
-  item: string;
+  item!: string;
 
   @Column('decimal')
-  price: number;
+  price!: number;
 
   @Column()
-  quantity: number;
+  quantity!: number;
 
   @Column({ default: 'pending' })
-  status: string;
+  status!: string;
 
-  
+  // Optional: Add a constructor for flexibility if needed
+  constructor(partial: Partial<Order>) {
+    Object.assign(this, partial);
+  }
 }

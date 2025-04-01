@@ -10,9 +10,17 @@
     "class-validator": "^0.14.1",
     "dotenv": "^16.4.7",
     "pg": "^8.14.1",
+    "tsconfig-paths": "^4.2.0",
     "typeorm": "^0.3.21"
   },
   "devDependencies": {
-    "@types/express": "^5.0.1"
+    "@types/express": "^5.0.1",
+    "@types/passport": "^1.0.17",
+    "ts-node": "^10.9.2",
+    "typescript": "^4.9.5"
+  },
+  "scripts": {
+    "start": "nest start",
+    "build": "tsc"
   }
 }
