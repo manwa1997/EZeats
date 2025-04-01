@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const order_entity_1 = require("./order.entity");
 let User = class User {
 };
+exports.User = User;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
@@ -42,7 +43,6 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => order_entity_1.Order, (order) => order.user),
     __metadata("design:type", Array)
 ], User.prototype, "orders", void 0);
-User = __decorate([
+exports.User = User = __decorate([
     (0, typeorm_1.Entity)()
 ], User);
-exports.User = User;

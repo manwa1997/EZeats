@@ -18,6 +18,7 @@ let Order = class Order {
         Object.assign(this, partial);
     }
 };
+exports.Order = Order;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
@@ -42,8 +43,7 @@ __decorate([
     (0, typeorm_1.Column)({ default: 'pending' }),
     __metadata("design:type", String)
 ], Order.prototype, "status", void 0);
-Order = __decorate([
+exports.Order = Order = __decorate([
     (0, typeorm_1.Entity)(),
     __metadata("design:paramtypes", [Object])
 ], Order);
-exports.Order = Order;
