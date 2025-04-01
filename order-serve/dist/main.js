@@ -14,8 +14,8 @@ const app_module_1 = require("./order-serve/app.module");
 function bootstrap() {
     return __awaiter(this, void 0, void 0, function* () {
         const app = yield core_1.NestFactory.create(app_module_1.AppModule);
-        yield app.listen(3000);
-        console.log('Server running on http://localhost:3000');
+        yield app.listen(3001);
+        console.log('Server running on http://localhost:3001');
     });
 }
 bootstrap();

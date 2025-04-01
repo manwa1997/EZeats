@@ -3,9 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from '../order-serve/src/order/order.strategy';
-import { OrderModule } from './src/order/order.module';
-import { dbConfig } from '../shared/config/db.config';
+import { JwtStrategy } from './order/order.strategy';
+import { OrderModule } from './order/order.module';
+import { dbConfig } from '../../shared/config/db.config';
 import { Order } from '@shared/entities/order.entity';
 import { User } from '@shared/entities/user.entity';
 

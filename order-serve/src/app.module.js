@@ -18,14 +18,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const order_entity_1 = require("../shared/entities/order.entity");
-const user_entity_1 = require("../shared/entities/user.entity");
+const order_entity_1 = require("../../shared/entities/order.entity");
+const user_entity_1 = require("../../shared/entities/user.entity");
 const passport_1 = require("@nestjs/passport");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
-const order_strategy_1 = require("../order-serve/src/order/order.strategy");
-const db_config_1 = require("../shared/config/db.config");
-const order_module_1 = require("./src/order/order.module");
+const order_strategy_1 = require("./order/order.strategy");
+const db_config_1 = require("../../shared/config/db.config");
+const order_module_1 = require("./order/order.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -43,7 +43,7 @@ exports.AppModule = AppModule = __decorate([
                 password: db_config_1.dbConfig.password,
                 database: db_config_1.dbConfig.database,
                 entities: [user_entity_1.User, order_entity_1.Order],
-                synchronize: true, // Be careful with 'synchronize' in production
+                synchronize: true, 
             }),
             passport_1.PassportModule.register({ defaultStrategy: 'jwt' }),
             jwt_1.JwtModule.registerAsync({

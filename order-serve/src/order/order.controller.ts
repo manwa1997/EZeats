@@ -13,6 +13,7 @@ export class OrderController {
   async createOrder(@Body() createOrderDto: CreateOrderDto, @Req() req: Request) {
     const user = req.user;
     console.log("user");
+    
     if (!user) {
       throw new Error('Unauthorized access: user not found');
     }
