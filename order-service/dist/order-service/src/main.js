@@ -10,12 +10,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@nestjs/core");
-const app_module_1 = require("../src/app.module");
-const common_1 = require("@nestjs/common");
+const app_module_1 = require("./app.module");
+const jwt_auth_guard_1 = require("./order/guards/jwt-auth.guard");
+const core_2 = require("@nestjs/core");
 function bootstrap() {
     return __awaiter(this, void 0, void 0, function* () {
         const app = yield core_1.NestFactory.create(app_module_1.AppModule);
-        app.useGlobalPipes(new common_1.ValidationPipe());
+        // Get an instance of Reflector and pass it to JwtAuthGuard
+        const reflector = app.get(core_2.Reflector);
+        app.useGlobalGuards(new jwt_auth_guard_1.JwtAuthGuard(reflector));
         yield app.listen(3000);
     });
 }

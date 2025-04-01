@@ -23,9 +23,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderController = void 0;
 const common_1 = require("@nestjs/common");
-const order_service_1 = require("./order.service");
 const CreateOrderDto_1 = require("./dtos/CreateOrderDto");
 const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
+const order_service_1 = require("./order.service");
 let OrderController = class OrderController {
     constructor(orderService) {
         this.orderService = orderService;
