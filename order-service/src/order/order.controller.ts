@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dtos/CreateOrderDto';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../order/guards/jwt-auth.guard'
 import { Request } from 'express';  // Explicitly import the Request type
 
 @Controller('orders')

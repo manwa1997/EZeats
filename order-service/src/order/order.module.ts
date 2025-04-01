@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Order } from '../../../shared/entities/order.entity'
-import { User } from '../../../shared/entities/user.entity';
 import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { User } from '@shared/entities/user.entity';
+import { Order } from '@shared/entities/order.entity';
 
 @Module({
   imports: [

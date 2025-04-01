@@ -6,10 +6,20 @@
     "emitDecoratorMetadata": true,
     "moduleResolution": "node",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    }
   },
   "include": [
     "src/**/*.ts",
-    "src/types/express.d.ts" 
+    "../shared/**/*.ts",
+    "src/types/express.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }

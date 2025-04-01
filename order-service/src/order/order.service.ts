@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Order } from '../../../shared/entities/order.entity';
-import { User } from '../../../shared/entities/user.entity';
 import { CreateOrderDto } from './dtos/CreateOrderDto';
+import { Order } from '@shared/entities/order.entity';
+import { User } from '@shared/entities/user.entity';
 
 @Injectable()
 export class OrderService {

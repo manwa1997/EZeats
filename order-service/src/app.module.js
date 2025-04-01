@@ -15,7 +15,8 @@ const user_entity_1 = require("../../shared/entities/user.entity");
 const order_module_1 = require("./order/order.module");
 let AppModule = class AppModule {
 };
-AppModule = __decorate([
+exports.AppModule = AppModule;
+exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             typeorm_1.TypeOrmModule.forRoot({
@@ -32,4 +33,3 @@ AppModule = __decorate([
         ],
     })
 ], AppModule);
-exports.AppModule = AppModule;

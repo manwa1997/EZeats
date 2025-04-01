@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { dbConfig } from '../../shared/config/db.config'; 
-import { Order } from '../../shared/entities/order.entity';
-import { User } from '../../shared/entities/user.entity';
 import { OrderModule } from './order/order.module';
+import { Order } from '@shared/entities/order.entity';
+import { User } from '@shared/entities/user.entity';
+import { dbConfig } from '@shared/config/db.config';
 
 @Module({
   imports: [
