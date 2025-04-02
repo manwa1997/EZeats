@@ -11,27 +11,25 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const auth_service_1 = require("./auth.service");
 const auth_controller_1 = require("./auth.controller");
-const user_entity_1 = require("./entities/user.entity"); // Assuming you have a User entity
-const db_config_1 = require("../../config/db.config"); // Import the database config
+const user_entity_1 = require("./entities/user.entity");
+const jwt_1 = require("@nestjs/jwt");
+const constants_1 = require("./constants");
+const cache_manager_1 = require("@nestjs/cache-manager");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forRoot({
-                type: 'postgres', // You can replace this with your DB type (MySQL, SQLite, etc.)
-                host: db_config_1.dbConfig.host,
-                port: db_config_1.dbConfig.port,
-                username: db_config_1.dbConfig.user,
-                password: db_config_1.dbConfig.password,
-                database: db_config_1.dbConfig.database,
-                entities: [user_entity_1.User], // Register your entities (e.g., User entity)
-                synchronize: true, // Make sure to set it to false in production
+            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]),
+            jwt_1.JwtModule.register({
+                secret: constants_1.jwtConstants.secret,
+                signOptions: { expiresIn: constants_1.jwtConstants.expiresIn },
             }),
-            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]), // Register entities here
+            cache_manager_1.CacheModule.register({ ttl: 3600 }), // Make sure CacheModule is correctly configured
         ],
         providers: [auth_service_1.AuthService],
         controllers: [auth_controller_1.AuthController],
+        exports: [auth_service_1.AuthService],
     })
 ], AuthModule);

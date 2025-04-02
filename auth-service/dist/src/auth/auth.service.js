@@ -41,6 +41,9 @@ var __importStar = (this && this.__importStar) || (function () {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -52,39 +55,111 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
-// src/auth/auth.service.ts
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
 const bcrypt = __importStar(require("bcryptjs"));
 const jwt_1 = require("@nestjs/jwt");
+const user_entity_1 = require("./entities/user.entity");
+const constants_1 = require("./constants");
+const cache_manager_1 = require("@nestjs/cache-manager");
 let AuthService = class AuthService {
-    constructor(jwtService) {
+    constructor(userRepository, jwtService, cache) {
+        this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.cache = cache;
     }
     register(registerDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const hashedPassword = yield bcrypt.hash(registerDto.password, 10);
-            // Save user to the database (using a User repository or service)
-            // Example: await this.userService.createUser(registerDto.username, hashedPassword);
+            const { username, email, password, firstName, lastName } = registerDto;
+            // Check if the username or email already exists
+            const existingUser = yield this.userRepository.findOne({
+                where: [{ username }, { email }],
+            });
+            if (existingUser) {
+                throw new common_1.BadRequestException('Username or email already exists');
+            }
+            // Hash password
+            const salt = yield bcrypt.genSalt(10);
+            const hashedPassword = yield bcrypt.hash(password, salt);
+            // Create and save user
+            const newUser = this.userRepository.create({
+                username,
+                email,
+                password: hashedPassword,
+                firstName,
+                lastName,
+            });
+            yield this.userRepository.save(newUser);
             return { message: 'User registered successfully' };
         });
     }
     login(loginDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Retrieve the user from the database (e.g., using a UserService)
-            // const user = await this.userService.findUserByUsername(loginDto.username);
-            // Validate user password (hash comparison)
-            // if (!await bcrypt.compare(loginDto.password, user.password)) {
-            //     throw new UnauthorizedException('Invalid credentials');
-            // }
-            // Generate JWT token
-            const payload = { username: loginDto.username }; // Payload example
-            const accessToken = this.jwtService.sign(payload);
-            return { accessToken };
+            const { username, password } = loginDto;
+            // First, check if the user data is in cache
+            let userCache = yield this.cache.get(`user:${username}`);
+            if (!userCache) {
+                // If the user data is not in cache, fetch it from the database, including the password
+                userCache = yield this.userRepository.findOne({
+                    where: { username },
+                    select: ['id', 'username', 'password'], // Include password here for comparison
+                });
+                if (!userCache) {
+                    throw new common_1.UnauthorizedException('Invalid credentials');
+                }
+                // Cache the user data (excluding password) for future lookups
+                const cacheData = {
+                    id: userCache.id,
+                    username: userCache.username,
+                };
+                yield this.cache.set(`user:${username}`, cacheData, 3600); // ttl is directly passed as a number (1 hour)
+            }
+            // Since we don't cache the password, we fetch it again from the database to compare it
+            const user = yield this.userRepository.findOne({
+                where: { id: userCache.id },
+                select: ['id', 'username', 'password'], // Ensure we fetch the password as well
+            });
+            if (!user) {
+                throw new common_1.UnauthorizedException('Invalid credentials');
+            }
+            // Check password validity by comparing the hashed password
+            if (!(yield bcrypt.compare(password, user.password))) {
+                throw new common_1.UnauthorizedException('Invalid credentials');
+            }
+            const payload = { sub: user.id, username: user.username };
+            // Generate the access token
+            const accessToken = this.jwtService.sign(payload, { secret: constants_1.jwtConstants.secret, expiresIn: constants_1.jwtConstants.expiresIn });
+            // Generate the refresh token
+            const refreshToken = this.jwtService.sign(payload, { secret: constants_1.jwtConstants.refreshSecret, expiresIn: constants_1.jwtConstants.refreshExpiresIn });
+            return {
+                accessToken,
+                refreshToken,
+            };
+        });
+    }
+    verifyRefreshToken(refreshToken) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                return this.jwtService.verify(refreshToken, { secret: constants_1.jwtConstants.refreshSecret });
+            }
+            catch (error) {
+                throw new common_1.UnauthorizedException('Invalid refresh token');
+            }
+        });
+    }
+    // Method to generate new access token
+    generateAccessToken(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.jwtService.sign(payload, { secret: constants_1.jwtConstants.secret, expiresIn: constants_1.jwtConstants.expiresIn });
         });
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [jwt_1.JwtService])
+    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(2, (0, common_1.Inject)(cache_manager_1.CACHE_MANAGER)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        jwt_1.JwtService, Object])
 ], AuthService);
