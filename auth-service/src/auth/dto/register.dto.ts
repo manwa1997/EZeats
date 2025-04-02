@@ -7,7 +7,7 @@ export class RegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  @Length(6, 20)  // Password length constraint (example: between 6 and 20 characters)
+  @Length(6, 20)  // Password length constraint 
   password: string;
 
   @IsEmail()

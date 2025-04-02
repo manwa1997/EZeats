@@ -5,6 +5,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from '../entities/user.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 jest.mock('bcryptjs');
 
@@ -23,6 +24,14 @@ describe('AuthService', () => {
                         save: jest.fn(),
                         findOne: jest.fn(),
                         create: jest.fn(),
+                    },
+                },
+                {
+                    provide: CACHE_MANAGER,
+                    useValue: {
+                        get: jest.fn(),
+                        set: jest.fn(),
+                        del: jest.fn(),
                     },
                 },
             ],
