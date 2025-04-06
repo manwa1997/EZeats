@@ -1,8 +1,8 @@
 import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
-import { CreateOrderDto } from './dtos/CreateOrderDto';
-import { Request } from 'express';  // Explicitly import the Request type
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Request } from 'express';
+import { JwtAuthGuard } from '../order/guards/jwt-auth.guard';
 import { OrderService } from './order.service';
+import { CreateOrderDto } from '../order/dtos/CreateOrderDto';
 
 @Controller('orders')
 export class OrderController {
@@ -10,13 +10,13 @@ export class OrderController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createOrder(@Body() createOrderDto: CreateOrderDto, @Req() req: Request) {
-    const user = req.user; // Get the user object
-    if (!user) {
+  async create(@Req() req: Request, @Body() createOrderDto: CreateOrderDto) {
+    const user = req.user as { userId: number };
+
+    if (!user || !user.userId) {
       throw new Error('Unauthorized access: user not found');
     }
-    
-    const userId = 1; // Access user.id safely
-    return this.orderService.createOrder(createOrderDto, userId);
+
+    return this.orderService.createOrder(createOrderDto, user.userId);
   }
 }
