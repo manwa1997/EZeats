@@ -23,21 +23,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderController = void 0;
 const common_1 = require("@nestjs/common");
+const jwt_auth_guard_1 = require("../order/guards/jwt-auth.guard");
 const order_service_1 = require("./order.service");
-const CreateOrderDto_1 = require("./dtos/CreateOrderDto");
-const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
+const CreateOrderDto_1 = require("../order/dtos/CreateOrderDto");
 let OrderController = class OrderController {
     constructor(orderService) {
         this.orderService = orderService;
     }
-    createOrder(createOrderDto, req) {
+    create(req, createOrderDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = req.user; // Get the user object
-            if (!user) {
+            const user = req.user;
+            if (!user || !user.userId) {
                 throw new Error('Unauthorized access: user not found');
             }
-            const userId = 1; // Access user.id safely
-            return this.orderService.createOrder(createOrderDto, userId);
+            return this.orderService.createOrder(createOrderDto, user.userId);
         });
     }
 };
@@ -45,12 +44,12 @@ exports.OrderController = OrderController;
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Req)()),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CreateOrderDto_1.CreateOrderDto, Object]),
+    __metadata("design:paramtypes", [Object, CreateOrderDto_1.CreateOrderDto]),
     __metadata("design:returntype", Promise)
-], OrderController.prototype, "createOrder", null);
+], OrderController.prototype, "create", null);
 exports.OrderController = OrderController = __decorate([
     (0, common_1.Controller)('orders'),
     __metadata("design:paramtypes", [order_service_1.OrderService])

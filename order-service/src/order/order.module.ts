@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '@shared/entities/user.entity';
+import { User } from '../order/entities/user.entity';
 import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
-import { Order } from '@shared/entities/order.entity';
+import { Order } from '../order/entities/order.entity';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtStrategy } from './order.strategy';
 import { HttpModule } from '@nestjs/axios';

@@ -23,14 +23,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderService = void 0;
 const common_1 = require("@nestjs/common");
-const typeorm_1 = require("@nestjs/typeorm");
-const typeorm_2 = require("typeorm");
-const user_entity_1 = require("@shared/entities/user.entity");
-const order_entity_1 = require("@shared/entities/order.entity");
+const typeorm_1 = require("typeorm");
+const order_entity_1 = require("./entities/order.entity");
+const user_entity_1 = require("./entities/user.entity");
+const typeorm_2 = require("@nestjs/typeorm");
+const typeorm_3 = require("typeorm");
 let OrderService = class OrderService {
-    constructor(orderRepository, userRepository) {
+    constructor(orderRepository, userRepository, dataSource) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
+        this.dataSource = dataSource;
     }
     createOrder(createOrderDto, userId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -38,17 +40,53 @@ let OrderService = class OrderService {
             if (!user) {
                 throw new common_1.NotFoundException('User not found');
             }
-            // Create the order and associate it with the user
-            const order = this.orderRepository.create(Object.assign(Object.assign({}, createOrderDto), { user: user }));
-            return this.orderRepository.save(order); // Save the order to the database
+            this.validateOrder(createOrderDto);
+            const isStockAvailable = yield this.checkStockAvailability(createOrderDto.item, createOrderDto.quantity);
+            if (!isStockAvailable) {
+                throw new common_1.BadRequestException('Not enough stock available for the item');
+            }
+            // Start a transaction using the injected DataSource
+            const queryRunner = this.dataSource.createQueryRunner();
+            yield queryRunner.startTransaction();
+            try {
+                const order = this.orderRepository.create(Object.assign(Object.assign({}, createOrderDto), { user }));
+                yield queryRunner.manager.save(order);
+                yield queryRunner.commitTransaction();
+                return order;
+            }
+            catch (error) {
+                yield queryRunner.rollbackTransaction();
+                throw new common_1.BadRequestException('Failed to create the order');
+            }
+            finally {
+                yield queryRunner.release();
+            }
+        });
+    }
+    // Helper method to validate order details
+    validateOrder(createOrderDto) {
+        if (!createOrderDto.item || createOrderDto.item.trim().length === 0) {
+            throw new common_1.BadRequestException('Item name cannot be empty');
+        }
+        if (createOrderDto.price <= 0) {
+            throw new common_1.BadRequestException('Price must be greater than zero');
+        }
+        if (createOrderDto.quantity <= 0) {
+            throw new common_1.BadRequestException('Quantity must be greater than zero');
+        }
+    }
+    checkStockAvailability(item, quantity) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return true; // Assume stock is available for the sake of simplicity
         });
     }
 };
 exports.OrderService = OrderService;
 exports.OrderService = OrderService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(order_entity_1.Order)),
-    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository])
+    __param(0, (0, typeorm_2.InjectRepository)(order_entity_1.Order)),
+    __param(1, (0, typeorm_2.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_1.Repository,
+        typeorm_1.Repository,
+        typeorm_3.DataSource])
 ], OrderService);

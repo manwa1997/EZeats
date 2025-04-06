@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrderModule } from './order/order.module';
-import { Order } from '@shared/entities/order.entity';
-import { User } from '@shared/entities/user.entity';
-import { dbConfig } from '@shared/config/db.config';
+import { Order } from '../src/order/entities/order.entity';
+import { User } from '../src/order/entities/user.entity';
+import { dbConfig } from './order/config/db.config';  
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -28,7 +28,7 @@ import { JwtStrategy } from './order/order.strategy';
     }),
 
     PassportModule.register({ defaultStrategy: 'jwt' }), 
-    
+
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'), 

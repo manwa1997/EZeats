@@ -11,13 +11,10 @@
     "skipLibCheck": true,
     "outDir": "./dist",
     "baseUrl": ".",
-    "paths": {
-      "@shared/*": ["../shared/*"]
-    }
+    "rootDir": "./src"  // Ensure the compiled files are in the same structure as src
   },
   "include": [
     "src/**/*.ts",
-    "../shared/**/*.ts",
     "src/types/express.d.ts"
   ],
   "exclude": [

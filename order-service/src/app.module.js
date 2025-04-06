@@ -9,9 +9,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const db_config_1 = require("../../shared/config/db.config");
-const order_entity_1 = require("../../shared/entities/order.entity");
-const user_entity_1 = require("../../shared/entities/user.entity");
+const db_config_1 = require("../src/order/config/db.config");
+const order_entity_1 = require("../src/order/entities/order.entity");
+const user_entity_1 = require("../src/order/entities/user.entity");
 const order_module_1 = require("./order/order.module");
 let AppModule = class AppModule {
 };

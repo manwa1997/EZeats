@@ -4,14 +4,15 @@
   "main": "index.js",
   "directories": {
     "test": "tests"
-  },
-  "scripts": {
-    "build": "tsc",
-    "start": "node dist/main.js",
-    "start:dev": "ts-node-dev --respawn --transpile-only src/main.ts",
-    "test": "jest --coverage",
-    "start:debug": "node --inspect-brk -r ts-node/register src/main.ts"
-  },
+  },"scripts": {
+  "start": "node dist/order/src/main.js",
+  "build": "tsc",
+  "start:dev": "ts-node-dev --respawn --transpile-only src/main.ts",
+  "test": "jest --coverage",
+  "start:debug": "node --inspect-brk -r ts-node/register src/main.ts"
+}
+,
+
   "keywords": [],
   "author": "",
   "license": "ISC",
