@@ -11,12 +11,11 @@ import { JwtStrategy } from './order/order.strategy';
 
 @Module({
   imports: [
-    // Load environment variables globally
+   
     ConfigModule.forRoot({
-      isGlobal: true, // Make sure environment variables are globally accessible
+      isGlobal: true, 
     }),
 
-    // Database configuration
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: dbConfig.host,
@@ -25,25 +24,21 @@ import { JwtStrategy } from './order/order.strategy';
       password: dbConfig.password,
       database: dbConfig.database,
       entities: [User, Order],
-      synchronize: true, // Be careful with 'synchronize' in production
+      synchronize: true, 
     }),
 
-    // Passport Module for handling authentication
-    PassportModule.register({ defaultStrategy: 'jwt' }), // Ensure jwt strategy is default
-
-    // JWT Authentication Module
+    PassportModule.register({ defaultStrategy: 'jwt' }), 
+    
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'), // Get JWT_SECRET from environment
-        signOptions: { expiresIn: '1h' }, // Optional expiration time for JWT tokens
+        secret: configService.get<string>('JWT_SECRET'), 
+        signOptions: { expiresIn: '1h' },
       }),
       inject: [ConfigService],
     }),
-
-    // Import OrderModule where you define the controllers and services related to orders
     OrderModule,
   ],
-  providers: [JwtStrategy], // Register JwtStrategy here
+  providers: [JwtStrategy], 
 
 })
 export class AppModule {}

@@ -5,8 +5,6 @@ import { Reflector } from '@nestjs/core';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  // Get an instance of Reflector and pass it to JwtAuthGuard
   const reflector = app.get(Reflector);
   app.useGlobalGuards(new JwtAuthGuard(reflector));
 
