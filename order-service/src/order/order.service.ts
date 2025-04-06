@@ -1,23 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateOrderDto } from './dtos/CreateOrderDto';
+import { DataSource } from 'typeorm';  
 
 @Injectable()
 export class OrderService {
-  // Change the visibility from private to public (or protected)
-  public orderRepository: Repository<Order>;
-  public userRepository: Repository<User>;
-
   constructor(
-    @InjectRepository(Order) orderRepository: Repository<Order>,
-    @InjectRepository(User) userRepository: Repository<User>
-  ) {
-    this.orderRepository = orderRepository;
-    this.userRepository = userRepository;
-  }
+    @InjectRepository(Order) private orderRepository: Repository<Order>,
+    @InjectRepository(User) private userRepository: Repository<User>,
+    private dataSource: DataSource,  
+  ) {}
 
   async createOrder(createOrderDto: CreateOrderDto, userId: number): Promise<Order> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -25,12 +20,50 @@ export class OrderService {
       throw new NotFoundException('User not found');
     }
 
-    // Create the order and associate it with the user
-    const order = this.orderRepository.create({
-      ...createOrderDto,
-      user: user,  // Associate user with the order
-    });
+    this.validateOrder(createOrderDto);
 
-    return this.orderRepository.save(order);  // Save the order to the database
+    const isStockAvailable = await this.checkStockAvailability(createOrderDto.item, createOrderDto.quantity);
+    if (!isStockAvailable) {
+      throw new BadRequestException('Not enough stock available for the item');
+    }
+
+    // Start a transaction using the injected DataSource
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.startTransaction();
+
+    try {
+      const order = this.orderRepository.create({
+        ...createOrderDto,
+        user,  
+      });
+
+      await queryRunner.manager.save(order);
+      await queryRunner.commitTransaction();
+
+      return order;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new BadRequestException('Failed to create the order');
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  // Helper method to validate order details
+  private validateOrder(createOrderDto: CreateOrderDto) {
+    if (!createOrderDto.item || createOrderDto.item.trim().length === 0) {
+      throw new BadRequestException('Item name cannot be empty');
+    }
+
+    if (createOrderDto.price <= 0) {
+      throw new BadRequestException('Price must be greater than zero');
+    }
+
+    if (createOrderDto.quantity <= 0) {
+      throw new BadRequestException('Quantity must be greater than zero');
+    }
+  }
+  private async checkStockAvailability(item: string, quantity: number): Promise<boolean> {
+    return true;  // Assume stock is available for the sake of simplicity
   }
 }
