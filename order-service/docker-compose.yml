@@ -4,7 +4,7 @@ services:
   order-service:
     build: .
     ports:
-      - "3000:3000"  # Map port 3000 of the container to port 3000 on the host machine
+      - "3001:3001"  # Map port 3000 of the container to port 3000 on the host machine
     environment:
       - DATABASE_HOST=db
       - DATABASE_PORT=5432

@@ -27,7 +27,6 @@ export class OrderService {
       throw new BadRequestException('Not enough stock available for the item');
     }
 
-    // Start a transaction using the injected DataSource
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.startTransaction();
 
@@ -49,7 +48,7 @@ export class OrderService {
     }
   }
 
-  // Helper method to validate order details
+  //  method to validate order details
   private validateOrder(createOrderDto: CreateOrderDto) {
     if (!createOrderDto.item || createOrderDto.item.trim().length === 0) {
       throw new BadRequestException('Item name cannot be empty');
