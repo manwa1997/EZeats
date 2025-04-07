@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  auth-service:
+    build:
+      context: ./auth-service  # Path to the directory containing auth-service Dockerfile
+    ports:
+      - "3000:3000"  # Map port 3000 of the container to port 3000 on the host
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=1234
+      - DATABASE_NAME=zeat
+    depends_on:
+      - db
+
+  order-service:
+    build:
+      context: ./order-service  # Path to the directory containing order-service Dockerfile
+    ports:
+      - "3001:3001"  # Map port 3001 of the container to port 3001 on the host
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=1234
+      - DATABASE_NAME=zeat
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: zeat
+    ports:
+      - "5432:5432"  # Map port 5432 of the container to port 5432 on the host machine
+    volumes:
+      - postgres-data:/var/lib/postgresql/data  # Persist database data
+
+volumes:
+  postgres-data:
+    driver: local
