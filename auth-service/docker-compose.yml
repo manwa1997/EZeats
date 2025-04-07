@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  auth-service:
+    build: ./ # Path to the auth-service folder
+    ports:
+      - "3000:3000"  # Exposes port 3001 for the auth service
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}  # Use environment variables from .env file
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+    depends_on:
+      - db  # Wait for the DB service to be ready
+    networks:
+      - ezeats-net
+    env_file:
+      - .env  # Reference to your environment file
+    restart: always  # Add restart policy here
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=ezeat
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - ezeats-net
+    restart: always  # Add restart policy here
+
+networks:
+  ezeats-net:
+
+volumes:
+  db-data:
