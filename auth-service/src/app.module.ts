@@ -28,7 +28,6 @@ import { redisStore } from 'cache-manager-redis-store';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // Apply the ThrottlerMiddleware globally
     consumer.apply(ThrottlerMiddleware).forRoutes('*'); // for all routes
   }
 }

@@ -61,23 +61,22 @@ export class AuthService {
     let userCache = await this.cache.get<UserCache>(`user:${username}`);
   
     if (!userCache) {
-      // If the user data is not in cache, fetch it from the database, including the password
+      // If the user data is not in cache  fetch it from the database, including the password
       userCache = await this.userRepository.findOne({
         where: { username },
-        select: ['id', 'username', 'password'], // Include password here for comparison
+        select: ['id', 'username', 'password'], 
       });
   
       if (!userCache) {
         throw new UnauthorizedException('Invalid credentials');
       }
   
-      // Cache the user data (excluding password) for future lookups
       const cacheData = {
         id: userCache.id,
         username: userCache.username,
       };
   
-      await this.cache.set(`user:${username}`, cacheData, 3600); // ttl is directly passed as a number (1 hour)
+      await this.cache.set(`user:${username}`, cacheData, 3600); 
     }
   
     // Since we don't cache the password, we fetch it again from the database to compare it
@@ -90,17 +89,14 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
   
-    // Check password validity by comparing the hashed password
     if (!(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
   
     const payload = { sub: user.id, username: user.username };
   
-    // Generate the access token
     const accessToken = this.jwtService.sign(payload, { secret: jwtConstants.secret, expiresIn: jwtConstants.expiresIn });
   
-    // Generate the refresh token
     const refreshToken = this.jwtService.sign(payload, { secret: jwtConstants.refreshSecret, expiresIn: jwtConstants.refreshExpiresIn });
   
     return {
