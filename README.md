@@ -82,7 +82,9 @@ Docker + Docker Compose
 JWT (Authentication)
 TypeORM
 
-
+# Swagger Endpoints 
+1- for order-service http://localhost:3001/api/orders
+2- for Auth-Service http://localhost:3000/api-docs
 # 👤 Author
 Manwa Rabaya
 JavaScript & Java Backend Developer
